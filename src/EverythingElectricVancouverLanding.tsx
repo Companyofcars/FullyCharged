@@ -424,7 +424,7 @@ export default function EverythingElectricVancouverLanding() {
         <div className="mx-auto max-w-7xl px-2 sm:px-4 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center gap-3">
-              <img src="/your-logo.png" alt="Vancouver Mitsubishi logo" className="h-8 w-8 rounded" />
+              <img src={`${import.meta.env.BASE_URL}your-logo.png`} alt="Outlander teaser" />
               <span className="hidden text-sm font-medium text-neutral-300 sm:block">Vancouver Mitsubishi</span>
             </div>
             <nav className="hidden md:flex items-center gap-1" aria-label="Primary">
@@ -480,7 +480,7 @@ export default function EverythingElectricVancouverLanding() {
                     playsInline
                     aria-label="Background video of a Mitsubishi Outlander PHEV"
                   >
-                    <source src="/path-to-video.mp4" type="video/mp4" />
+                    <source src={`${import.meta.env.BASE_URL}path-to-video.mp4`} type="video/mp4" />
                   </video>
                 </motion.div>
                 {/* Grid Pattern Overlay */}
