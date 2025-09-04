@@ -76,7 +76,20 @@ function sendAnalytics(eventName: string, payload: Record<string, any> = {}) {
 }
 
 // --- LEAD SUBMISSION STUB ----------------------------------------------------
-export async function submitLead(formType, payload) {
+type LeadFormType = 'gift' | 'test' | 'brochure' | 'preorder2026';
+interface LeadPayload {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  source?: string;
+  joinEbike?: string;
+  name?: string;
+  notes?: string;
+  [key: string]: any;
+}
+
+export async function submitLead(formType: LeadFormType, payload: LeadPayload) {
   if (formType === 'gift' || formType === 'test' || formType === 'brochure') {
     const jotformApiKey = 'e8457bea10b7692f64b06e82e5b59a16';
     // Use correct form ID for each CTA
