@@ -19,8 +19,7 @@ jobs:
         with:
           node-version: 20
       - run: npm ci
-      # Build with repo base so assets load under /FullyCharged/
-      - run: npm run build -- --base=/FullyCharged/
+      - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
