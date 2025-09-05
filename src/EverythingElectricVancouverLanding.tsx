@@ -211,7 +211,7 @@ function ModalForm({ isOpen, onClose, formType, hidden }: {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (formType === 'gift' || formType === 'test' || formType === 'brochure') {
-      if (!firstName.trim() || !lastName.trim() || !isValidEmail(email) || !consent) { setStatus('error'); return; }
+  if (!firstName.trim() || !lastName.trim() || !isValidEmail(email) || !phone.trim() || !consent) { setStatus('error'); return; }
       setStatus('submitting');
       // Ensure payload includes all fields for Airtable webhook
       const payload = {
@@ -311,7 +311,7 @@ function ModalForm({ isOpen, onClose, formType, hidden }: {
                 </div>
                 <div>
                   <label htmlFor={`phone-${formType}`} className="block text-sm text-neutral-200">Phone Number</label>
-                  <input id={`phone-${formType}`} type="tel" inputMode="tel" value={phone} onChange={(e)=>setPhone(formatPhone(e.target.value))}
+                  <input id={`phone-${formType}`} type="tel" inputMode="tel" required value={phone} onChange={(e)=>setPhone(formatPhone(e.target.value))}
                          className="mt-1 w-full rounded-xl bg-neutral-800 px-3 py-2 text-sm text-white placeholder-neutral-400 ring-1 ring-white/10 focus:ring-2 focus:ring-offset-2 focus:ring-offset-neutral-900" style={{ outlineColor: ACCENT }} placeholder="(000) 000-0000" />
                   <span className="text-xs text-neutral-400">Please enter a valid phone number.</span>
                 </div>
@@ -373,7 +373,7 @@ function PreorderForm({ hidden }: { hidden: Record<string, string> }) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!name.trim() || !isValidEmail(email) || !consent) { setStatus('error'); return; }
+  if (!name.trim() || !isValidEmail(email) || !phone.trim() || !consent) { setStatus('error'); return; }
     setStatus('submitting');
     const payload = { name: name.trim(), email: email.trim(), phone: phone.trim(), notes: notes.trim(), source: PREORDER_SOURCE_TAG, ...hidden };
     try {
@@ -395,8 +395,8 @@ function PreorderForm({ hidden }: { hidden: Record<string, string> }) {
           <input id="pre-email" type="email" value={email} onChange={(e)=>setEmail(e.target.value)} required className="mt-1 w-full rounded-xl bg-neutral-800 px-3 py-2 text-sm text-white ring-1 ring-white/10 focus:ring-2 focus:ring-offset-2 focus:ring-offset-neutral-900" style={{ outlineColor: ACCENT }} placeholder="you@example.com" />
         </div>
         <div>
-          <label htmlFor="pre-phone" className="block text-sm text-neutral-200">Phone <span className="text-neutral-400">(optional)</span></label>
-          <input id="pre-phone" type="tel" inputMode="tel" value={phone} onChange={(e)=>setPhone(formatPhone(e.target.value))} className="mt-1 w-full rounded-xl bg-neutral-800 px-3 py-2 text-sm text-white ring-1 ring-white/10 focus:ring-2 focus:ring-offset-2 focus:ring-offset-neutral-900" style={{ outlineColor: ACCENT }} placeholder="(604) 555-0199" />
+          <label htmlFor="pre-phone" className="block text-sm text-neutral-200">Phone<span aria-hidden="true"> *</span></label>
+          <input id="pre-phone" type="tel" inputMode="tel" required value={phone} onChange={(e)=>setPhone(formatPhone(e.target.value))} className="mt-1 w-full rounded-xl bg-neutral-800 px-3 py-2 text-sm text-white ring-1 ring-white/10 focus:ring-2 focus:ring-offset-2 focus:ring-offset-neutral-900" style={{ outlineColor: ACCENT }} placeholder="(604) 555-0199" />
         </div>
         <div>
           <label htmlFor="pre-notes" className="block text-sm text-neutral-200">Notes <span className="text-neutral-400">(optional)</span></label>
