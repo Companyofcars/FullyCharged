@@ -434,7 +434,7 @@ function PreorderForm({ hidden }: { hidden: Record<string, string> }) {
 // --- MAIN COMPONENT ----------------------------------------------------------
 export default function EverythingElectricVancouverLanding() {
   const hidden = useMemo(() => getQueryParams(), []);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  // const [mobileOpen, setMobileOpen] = useState(false);
   const [activeModal, setActiveModal] = useState<null | 'gift' | 'test' | 'brochure'>(null);
   const [route, setRoute] = useState<'home'|'preorder'>(getRouteFromHash());
 
@@ -468,32 +468,15 @@ export default function EverythingElectricVancouverLanding() {
             <nav className="hidden md:flex items-center gap-1" aria-label="Primary">
               {route === 'home' && (
                 <>
-                  <NavA href="#specials" onClick={()=>setMobileOpen(false)}>Specials</NavA>
-                  <NavA href="#event" onClick={()=>setMobileOpen(false)}>Event Info</NavA>
-                  <NavA href="#contact" onClick={()=>setMobileOpen(false)}>Contact</NavA>
+                  <NavA href="#specials">Specials</NavA>
+                  <NavA href="#event">Event Info</NavA>
+                  <NavA href="#contact">Contact</NavA>
                 </>
               )}
             </nav>
-            <button aria-label="Open menu" aria-expanded={mobileOpen} onClick={()=>setMobileOpen(v=>!v)} className="inline-flex items-center justify-center rounded-lg p-2 md:hidden hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2" style={{ outlineColor: ACCENT }}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
-            </button>
+            {/* Mobile menu button and accordion menu are hidden/removed */}
           </div>
         </div>
-        <AnimatePresence>
-          {mobileOpen && (
-            <motion.nav initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="md:hidden border-t border-white/10 bg-neutral-950" aria-label="Mobile">
-              <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8 flex flex-col gap-2">
-                {route === 'home' && (
-                  <>
-                    <NavA href="#specials" onClick={()=>setMobileOpen(false)}>Specials</NavA>
-                    <NavA href="#event" onClick={()=>setMobileOpen(false)}>Event Info</NavA>
-                    <NavA href="#contact" onClick={()=>setMobileOpen(false)}>Contact</NavA>
-                  </>
-                )}
-              </div>
-            </motion.nav>
-          )}
-        </AnimatePresence>
       </header>
 
       <main id="main">
@@ -631,10 +614,7 @@ export default function EverythingElectricVancouverLanding() {
                   <li>Trade-in appraisals in minutes</li><li className="text-neutral-500">•</li>
                   <li>Luxury Showroom</li><li className="text-neutral-500">•</li>
                 </ul>
-                <div className="mt-6 flex items-center gap-4 opacity-80">
-                  <div aria-label="Mitsubishi Canada logo placeholder" className="h-8 w-24 rounded bg-white/20" />
-                  <div aria-label="Event logo placeholder" className="h-8 w-24 rounded bg:white/20" />
-                </div>
+
               </div>
             </section>
 
@@ -651,14 +631,6 @@ export default function EverythingElectricVancouverLanding() {
                       {CONTACT.hours.map((h, i) => (
                         <li key={i}>{h}</li>
                       ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-semibold">Links</h3>
-                    <ul className="mt-3 space-y-1 text-sm text-neutral-300">
-                      <li><a className="underline-offset-2 hover:underline" href="#">Privacy</a></li>
-                      <li><a className="underline-offset-2 hover:underline" href="#">Terms</a></li>
-                      <li><a className="underline-offset-2 hover:underline" href="#">Contest Rules</a></li>
                     </ul>
                   </div>
                   <div className="md:text-right">
