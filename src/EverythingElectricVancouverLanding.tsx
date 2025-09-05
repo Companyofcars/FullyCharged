@@ -90,20 +90,53 @@ interface LeadPayload {
 }
 
 export async function submitLead(formType: LeadFormType, payload: LeadPayload) {
-  if (formType === 'gift' || formType === 'test' || formType === 'brochure') {
-    const jotformApiKey = 'e8457bea10b7692f64b06e82e5b59a16';
-    // Use correct form ID for each CTA
-    let jotformFormId = '';
-    if (formType === 'gift') jotformFormId = '252456163845058';
-    else if (formType === 'test') jotformFormId = '252456299052260';
-    else if (formType === 'brochure') jotformFormId = '252456907411255';
+  if (formType === 'gift') {
+    // POST to YOUR proxy, not Airtable directly
+    const PROXY_URL =
+      import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000/api/lead';
 
-    // Field IDs are the same for all three forms
+    function splitName(full?: string, first?: string, last?: string) {
+      const n = (full || `${first || ''} ${last || ''}`).trim().replace(/\s+/g, ' ');
+      if (!n) return { firstName: '', lastName: '' };
+      const parts = n.split(' ');
+      return { firstName: parts[0], lastName: parts.slice(1).join(' ') || '' };
+    }
+
+    const { firstName, lastName } =
+      splitName(payload.name, payload.firstName, payload.lastName);
+
+    const body = {
+      firstName,
+      lastName,
+      eMail: payload.email || '',
+      phoneNumber: payload.phone || '',
+      source: payload.source || 'FullyCharged2025',
+      joinEbike: !!payload.joinEbike,
+      utm_source: payload.utm_source || '',
+      utm_medium: payload.utm_medium || '',
+      utm_campaign: payload.utm_campaign || '',
+      qr_id: payload.qr_id || '',
+      formType: 'gift',
+    };
+
+    const res = await fetch(PROXY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),         // <-- backend forwards this to Airtable webhook
+    });
+
+    if (!res.ok) throw new Error(`Backend proxy failed: ${res.status}`);
+    return { ok: true };
+  } else if (formType === 'test' || formType === 'brochure') {
+    // --- JOTFORM LOGIC (unchanged) ---
+    const jotformApiKey = 'e8457bea10b7692f64b06e82e5b59a16';
+    let jotformFormId = '';
+    if (formType === 'test') jotformFormId = '252456299052260';
+    else if (formType === 'brochure') jotformFormId = '252456907411255';
     const fullNameId = '3';
     const emailId = '4';
     const phoneId = '5';
-    const ebikeFieldId = '7'; // From JotForm field details
-
+    const ebikeFieldId = '7';
     const params = new URLSearchParams();
     params.append(`submission[${fullNameId}][first]`, payload.firstName || '');
     params.append(`submission[${fullNameId}][last]`, payload.lastName || '');
@@ -112,7 +145,6 @@ export async function submitLead(formType: LeadFormType, payload: LeadPayload) {
     if (payload.joinEbike) {
       params.append(`submission[${ebikeFieldId}]`, 'Yes');
     }
-
     try {
       const res = await fetch(
         `https://api.jotform.com/form/${jotformFormId}/submissions?apiKey=${jotformApiKey}`,
@@ -185,7 +217,17 @@ function ModalForm({ isOpen, onClose, formType, hidden }: {
     if (formType === 'gift' || formType === 'test' || formType === 'brochure') {
       if (!firstName.trim() || !lastName.trim() || !isValidEmail(email) || !consent) { setStatus('error'); return; }
       setStatus('submitting');
-  const payload = { firstName: firstName.trim(), lastName: lastName.trim(), email: email.trim(), phone: phone.trim(), source: SOURCE_TAG, joinEbike: joinEbike ? 'yes' : '', ...hidden };
+      // Ensure payload includes all fields for Airtable webhook
+      const payload = {
+        name: `${firstName.trim()} ${lastName.trim()}`,
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        eMail: email.trim(),
+        phoneNumber: phone.trim(),
+        source: SOURCE_TAG,
+        joinEbike: joinEbike ? 'yes' : '',
+        ...hidden
+      };
       try {
         sendAnalytics('lead_submit', { formType, ...payload });
         const res = await submitLead(formType, payload);
