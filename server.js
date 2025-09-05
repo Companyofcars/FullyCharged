@@ -24,7 +24,22 @@ app.use((req, res, next) => {
 // Proxy endpoint
 app.post("/api/lead", async (req, res) => {
   try {
-    const body = JSON.stringify(req.body);
+    // DO NOT rename keys; build the body using your desired names
+    const b = req.body || {};
+    const payload = {
+      firstName:   b.firstName ?? '',
+      lastName:    b.lastName ?? '',
+      eMail:       (b.eMail ?? b.email ?? ''),        // accept either, send eMail
+      phoneNumber: (b.phoneNumber ?? b.phone ?? ''),  // accept either, send phoneNumber
+      source:      b.source ?? '',
+      joinEbike:   !!b.joinEbike,
+      utm_source:  b.utm_source ?? '',
+      utm_medium:  b.utm_medium ?? '',
+      utm_campaign:b.utm_campaign ?? '',
+      qr_id:       b.qr_id ?? ''
+    };
+
+    const body = JSON.stringify(mapped);
 
     const fwd = await fetch(AIRTABLE_WEBHOOK, {
       method: "POST",

@@ -90,49 +90,45 @@ interface LeadPayload {
 }
 
 export async function submitLead(formType: LeadFormType, payload: LeadPayload) {
-  if (formType === 'gift') {
-    // POST to YOUR proxy, not Airtable directly
-    const PROXY_URL =
-      import.meta.env.VITE_BACKEND_URL || 'http://localhost:4000/api/lead';
+  const WORKER_URL = 'https://vm-lead-proxy.alex-cd6.workers.dev';
 
-    function splitName(full?: string, first?: string, last?: string) {
-      const n = (full || `${first || ''} ${last || ''}`).trim().replace(/\s+/g, ' ');
-      if (!n) return { firstName: '', lastName: '' };
-      const parts = n.split(' ');
-      return { firstName: parts[0], lastName: parts.slice(1).join(' ') || '' };
-    }
+  function splitName(full?: string, first?: string, last?: string) {
+    const n = (full || `${first || ''} ${last || ''}`).trim().replace(/\s+/g, ' ');
+    if (!n) return { firstName: '', lastName: '' };
+    const parts = n.split(' ');
+    return { firstName: parts[0], lastName: parts.slice(1).join(' ') || '' };
+  }
 
+  if (formType === 'gift' || formType === 'brochure') {
     const { firstName, lastName } =
       splitName(payload.name, payload.firstName, payload.lastName);
 
     const body = {
       firstName,
       lastName,
-      eMail: payload.email || '',
-      phoneNumber: payload.phone || '',
+      eMail: payload.eMail || '',
+      phoneNumber: payload.phoneNumber || '',
       source: payload.source || 'FullyCharged2025',
       joinEbike: !!payload.joinEbike,
       utm_source: payload.utm_source || '',
       utm_medium: payload.utm_medium || '',
       utm_campaign: payload.utm_campaign || '',
       qr_id: payload.qr_id || '',
-      formType: 'gift',
+      formType,
     };
 
-    const res = await fetch(PROXY_URL, {
+    const res = await fetch(WORKER_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),         // <-- backend forwards this to Airtable webhook
+      body: JSON.stringify(body),
     });
 
-    if (!res.ok) throw new Error(`Backend proxy failed: ${res.status}`);
+    if (!res.ok) throw new Error(`Worker failed: ${res.status}`);
     return { ok: true };
-  } else if (formType === 'test' || formType === 'brochure') {
+  } else if (formType === 'test') {
     // --- JOTFORM LOGIC (unchanged) ---
     const jotformApiKey = 'e8457bea10b7692f64b06e82e5b59a16';
-    let jotformFormId = '';
-    if (formType === 'test') jotformFormId = '252456299052260';
-    else if (formType === 'brochure') jotformFormId = '252456907411255';
+    let jotformFormId = '252456299052260';
     const fullNameId = '3';
     const emailId = '4';
     const phoneId = '5';
